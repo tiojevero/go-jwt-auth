@@ -15,6 +15,11 @@ type SignupRequest struct {
 func main() {
 	app := fiber.New()
 
+	_, err := createDBEngine()
+	if err != nil {
+		panic(err)
+	}
+
 	app.Post("/signup", func(c *fiber.Ctx) error {
 		req := new(SignupRequest)
 		if err := c.BodyParser(req); err != nil {

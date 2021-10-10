@@ -12,6 +12,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/lib/pq v1.10.3
 	github.com/valyala/fasthttp v1.30.0 // indirect
 	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac // indirect
 	xorm.io/xorm v1.2.5 // indirect
