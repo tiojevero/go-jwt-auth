@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const port string = ":5000"
@@ -15,7 +16,7 @@ type SignupRequest struct {
 func main() {
 	app := fiber.New()
 
-	_, err := createDBEngine()
+	engine, err := createDBEngine()
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +31,24 @@ func main() {
 			return fiber.NewError(fiber.StatusBadRequest, "Invalid signup request")
 		}
 
-		
+		// SAVE THIS INFO IN TO THE DATABASE
+		hash, err := bcrypt.GenerateFromPassword([]byte{req.Password}, bcrypt.DefaultCost); 
+
+		if err != nil {
+			return err
+		}
+
+		user := &User {
+			Name : req.Name,
+			Email : req.Email,
+			Password : string(hash),
+		}
+
+		_, err = engine.Insert(user) 
+		if err != nil {
+			return err
+		}
+
 
 		return nil
 	})
