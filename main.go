@@ -1,7 +1,12 @@
 package main
 
 import (
+	"os/user"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -50,11 +55,17 @@ func main() {
 		}
 
 
-		return nil
+		// CREATE JWT TOKEN
+		token, exp, err := createJWTToken(*user)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(fiber.Map({"token": token, "exp": exp, "user", user}))
 	})
 
 	app.Post("/login", func(c *fiber.Ctx) error {
-		return nil
+		request to microservices
 	})
 
 	app.Post("/private", func(c *fiber.Ctx) error {
@@ -73,3 +84,16 @@ func main() {
 }
 
 
+func createJWTToken(user data.User) (string, int64, error) {
+	exp := time.Now().Add(time.Minute * 30).Unix()
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["user_id"] = user.Id 
+	claims["exp"] = exp
+	t, err := token.signedString([]byte("secret"))
+	if err != nil {
+		return "", 0, err
+	}
+
+	return t, exp, nil
+}
