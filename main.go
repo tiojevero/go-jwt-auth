@@ -70,7 +70,35 @@ func main() {
 	})
 
 	app.Post("/login", func(c *fiber.Ctx) error {
-		request to microservices
+		req := new(LoginRequest)
+		if err := c.BodyParser(req); err != nil {
+			return err
+		}
+
+		if req.Email == "" || req.Password == "" {
+			return fiber.NewError(fiber.StatusBadRequest, "Invalid Login Credentials")
+		}
+
+
+		// FIND USER IN DATABASE
+		user := new(User)
+		has, err := engine.Where("email = ?", req.Email).Desc("id").Get(User)
+		if err != nil {
+			return err
+		}
+
+		if !has {
+			return fiber.New(fiber.StatusBadRequest, "Invalid Login Credentials")
+		}
+
+
+		// CREATE JWT TOKEN
+		token, exp, err := createJWTToken(*user)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(fiber.Map({"token": token, "exp": exp, "user", user}))
 	})
 
 	app.Post("/private", func(c *fiber.Ctx) error {
