@@ -18,6 +18,11 @@ type SignupRequest struct {
 	Password string
 }
 
+type LoginRequest struct {
+	Email string
+	Password string
+}
+
 func main() {
 	app := fiber.New()
 
