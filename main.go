@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os/user"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -66,7 +65,7 @@ func main() {
 			return err
 		}
 
-		return c.JSON(fiber.Map({"token": token, "exp": exp, "user", user}))
+		return c.JSON(fiber.Map{"token": token, "exp": exp, "user", user})
 	})
 
 	app.Post("/login", func(c *fiber.Ctx) error {
@@ -88,7 +87,7 @@ func main() {
 		}
 
 		if !has {
-			return fiber.New(fiber.StatusBadRequest, "Invalid Login Credentials")
+			return fiber.NewError(fiber.StatusBadRequest, "Invalid Login Credentials")
 		}
 
 
@@ -98,7 +97,7 @@ func main() {
 			return err
 		}
 
-		return c.JSON(fiber.Map({"token": token, "exp": exp, "user", user}))
+		return c.JSON(fiber.Map{"token": token, "exp": exp, "user", user})
 	})
 
 	app.Post("/private", func(c *fiber.Ctx) error {
@@ -117,13 +116,13 @@ func main() {
 }
 
 
-func createJWTToken(user data.User) (string, int64, error) {
+func createJWTToken(user User) (string, int64, error) {
 	exp := time.Now().Add(time.Minute * 30).Unix()
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["user_id"] = user.Id 
 	claims["exp"] = exp
-	t, err := token.signedString([]byte("secret"))
+	t, err := token.SignedString([]byte("secret"))
 	if err != nil {
 		return "", 0, err
 	}
