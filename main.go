@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -41,7 +40,7 @@ func main() {
 		}
 
 		// SAVE THIS INFO IN TO THE DATABASE
-		hash, err := bcrypt.GenerateFromPassword([]byte{req.Password}, bcrypt.DefaultCost); 
+		hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost); 
 
 		if err != nil {
 			return err
@@ -65,7 +64,7 @@ func main() {
 			return err
 		}
 
-		return c.JSON(fiber.Map{"token": token, "exp": exp, "user", user})
+		return c.JSON(fiber.Map{"token": token, "exp": exp, "user": user})
 	})
 
 	app.Post("/login", func(c *fiber.Ctx) error {
@@ -81,7 +80,7 @@ func main() {
 
 		// FIND USER IN DATABASE
 		user := new(User)
-		has, err := engine.Where("email = ?", req.Email).Desc("id").Get(User)
+		has, err := engine.Where("email = ?", req.Email).Desc("id").Get(user)
 		if err != nil {
 			return err
 		}
@@ -97,7 +96,7 @@ func main() {
 			return err
 		}
 
-		return c.JSON(fiber.Map{"token": token, "exp": exp, "user", user})
+		return c.JSON(fiber.Map{"token": token, "exp": exp, "user": user})
 	})
 
 	app.Post("/private", func(c *fiber.Ctx) error {
