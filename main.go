@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -51,6 +52,15 @@ func main() {
 			Email : req.Email,
 			Password : string(hash),
 		}
+		
+		checkUser := new(User)
+		has, err := engine.Where("email = ?", req.Email).Desc("id").Get(checkUser)
+		if err != nil {
+			return err
+		}
+		if has {
+			return fiber.NewError(fiber.StatusBadRequest, "Email Already Registered")
+		} 
 
 		_, err = engine.Insert(user) 
 		if err != nil {
@@ -81,6 +91,7 @@ func main() {
 		// FIND USER IN DATABASE
 		user := new(User)
 		has, err := engine.Where("email = ?", req.Email).Desc("id").Get(user)
+		fmt.Println(has)
 		if err != nil {
 			return err
 		}
